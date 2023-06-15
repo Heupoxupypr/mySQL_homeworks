@@ -33,22 +33,55 @@ VALUES
 
 SELECT * FROM staff;
 
+-- Отсортируйте данные по полю заработная плата (salary) в порядке: убывания; возрастания
 SELECT 
-	salary,
+	CONCAT(firstname, " ", lastname) AS fullname,
     id,
-    CONCAT(firstname, " ", lastname) AS fullname -- "1" + " " + "1" = "1 1"
+    salary
 FROM staff
 ORDER BY salary DESC;
 
 SELECT 
-	salary,
+	CONCAT(firstname, " ", lastname) AS fullname,
     id,
-    CONCAT(firstname, " ", lastname) AS fullname -- "1" + " " + "1" = "1 1"
+    salary   
 FROM staff
-ORDER BY salary ASC;
+ORDER BY salary;
 
+-- Выведите 5 максимальных заработных плат (saraly)
 SELECT 
-	salary
+	salary as TOP_5_salary
 FROM staff
 ORDER BY salary DESC
 LIMIT 5;
+
+-- Посчитайте суммарную зарплату (salary) по каждой специальности (роst)
+
+SELECT
+	post,
+    SUM(salary) AS SUM_salary
+FROM staff
+GROUP BY post;
+
+-- Найдите кол-во сотрудников с специальностью (post) «Рабочий» в возрасте от 24 до 49 лет включительно.
+
+SELECT
+	post,
+    COUNT(id)
+FROM staff
+WHERE post = "Рабочий" AND ((age >= 24) AND (age <= 49))
+GROUP BY post;
+
+-- Найдите количество специальностей
+
+SELECT COUNT(DISTINCT post) AS Post_count
+FROM staff;
+
+-- Выведите специальности, у которых средний возраст сотрудников меньше 30 лет
+
+SELECT 
+	post,
+    ROUND (AVG(age), 0) AS AVG_age
+FROM staff
+GROUP BY post
+HAVING AVG(age) > 30;
