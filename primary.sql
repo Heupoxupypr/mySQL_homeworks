@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS lesson_4;
-CREATE DATABASE lesson_4;
-USE lesson_4;
+DROP DATABASE IF EXISTS VK_DB;
+CREATE DATABASE VK_DB;
+USE VK_DB;
 
 -- пользователи
 DROP TABLE IF EXISTS users;
@@ -236,3 +236,66 @@ SELECT
 FROM likes
 GROUP BY media_id
 ORDER BY media_id;
+
+-- Выборка данных по пользователю: ФИО, город проживания, название файла (только фото)
+
+SELECT
+	u.firstname AS Firstname,
+    u.lastname AS Lastname,
+    p.hometown as City,
+    m.filename as Mediafile
+FROM users u
+JOIN `profiles` p ON p.user_id = u.id -- получение города проживания
+JOIN media m ON m.id = p.photo_id;
+
+-- Выборка данных по пользователю: ФИО, город проживания, название файла (все файлы)
+
+SELECT
+	u.firstname AS Firstname,
+    u.lastname AS Lastname,
+    p.hometown AS City,
+    m.filename AS Mediafile
+FROM users u
+JOIN `profiles` p ON p.user_id = u.id -- получение города проживания
+JOIN media m ON m.user_id = u.id;
+
+-- Список медиа с количеством лайков
+SELECT
+	m.id,
+    m.filename AS Mediafile,
+    COUNT(*) AS Likes,
+    CONCAT(u.firstname, " ", u.lastname) AS Fullname
+FROM media m
+JOIN users u ON m.user_id = u.id
+JOIN likes l ON m.id = l.media_id
+GROUP BY m.id
+ORDER BY likes DESC;
+
+
+-- Список медиафайлов пользователя, указывая название типа файла
+SELECT
+    m.filename AS Mediafile,
+    mt.name_type AS Typemedia
+FROM media m
+LEFT JOIN media_types mt ON mt.id = m.media_type_id;
+
+-- Подсчитать общее количество лайков, которые получили пользователи младше 12 лет включительно.
+-- SELECT
+-- 	user_id,
+--     birthday,
+--     (YEAR(CURRENT_DATE)-YEAR(`birthday`))-(RIGHT(CURRENT_DATE,5)<RIGHT(`birthday`,5)) AS age
+-- FROM
+-- 	`profiles`;
+    
+SELECT
+	CONCAT(u.firstname, " ", u.lastname) AS Fullname,
+    (YEAR(CURRENT_DATE)-YEAR(p.birthday))-(RIGHT(CURRENT_DATE,5)<RIGHT(p.birthday,5)) AS Age,
+    COUNT(*) AS Likes
+FROM users u
+JOIN `profiles` p ON p.user_id = u.id
+JOIN likes l ON u.id = l.user_id
+WHERE ((YEAR(CURRENT_DATE)-YEAR(p.birthday))-(RIGHT(CURRENT_DATE,5)<RIGHT(p.birthday,5))) <= 12
+GROUP BY u.id;
+
+-- Определить кто больше поставил лайков (всего): мужчины или женщины
+
