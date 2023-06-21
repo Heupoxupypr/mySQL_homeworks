@@ -67,3 +67,33 @@ ORDER BY cost DESC;
 SELECT
 	*
 FROM name_filter;
+
+DROP TABLE IF EXISTS trains_way;
+CREATE TABLE trains_way
+(
+	id INT NOT NULL PRIMARY KEY,
+    train_id INT,
+    station VARCHAR(45),
+    station_time TIME
+);
+
+INSERT trains_way
+VALUES
+	(1, 110, "San Francisco","10:00:00"),
+    (2, 110, "Redwood City","10:54:00" ),
+    (3, 110, "Palo Alto","11:02:00" ),
+    (4, 110, "San Jose","12:35:00" ),
+	(5, 120, "San Francisco","11:00:00"),
+    (6, 120, "Palo Alto","12:49:00"), 
+    (7, 120, "San Jose","13:30:00"); 
+    
+    SELECT
+		*
+	FROM trains_way;
+    
+SELECT 
+	train_id,
+	station,
+    station_time, 
+	TIMEDIFF(LEAD(station_time) OVER(PARTITION BY train_id ORDER BY station_time), station_time) AS time_to_next_station_interval
+FROM trains_way;
